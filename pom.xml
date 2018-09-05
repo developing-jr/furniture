@@ -10,4 +10,8 @@
 
     <packaging>pom</packaging>
 
+    <modules>
+        <module>furniture</module>
+    </modules>
+
 </project>
