@@ -1,6 +1,8 @@
 # Ideam
 *.iml
-*.idea
+.idea/**
+!.idea/runConfigurations/
+!.idea/runConfigurations/*.xml
 
 # Compiled class file
 *.class
