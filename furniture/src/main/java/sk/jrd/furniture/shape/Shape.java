@@ -2,12 +2,12 @@ package sk.jrd.furniture.shape;
 
 import java.util.BitSet;
 
-public interface Shape {
+interface Shape {
 
-        int getWidth();
+    int getWidth();
 
-        int getHeight();
+    int getHeight();
 
-        BitSet getBody();
+    BitSet getBody();
 
-        }
+}

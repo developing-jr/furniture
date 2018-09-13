@@ -1,16 +1,16 @@
 package sk.jrd.furniture.shape;
 
-import static com.google.common.base.Preconditions.*;
-
+import javax.annotation.Nonnull;
 import java.util.BitSet;
 
-import javax.annotation.Nonnull;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 abstract class AbstractShape implements Shape {
 
-    private int width;
-    private int height;
-    private BitSet body;
+    private final int width;
+    private final int height;
+    private final BitSet body;
 
     AbstractShape(int width, int height, @Nonnull BitSet body) {
         checkArgument(width > 0, "With of shape has not valid size, has to be greater than 0");
@@ -34,5 +34,14 @@ abstract class AbstractShape implements Shape {
     @Override
     public BitSet getBody() {
         return body;
+    }
+
+    @Override
+    public String toString() {
+        return "AbstractShape{" +
+                "width=" + width +
+                ", height=" + height +
+                ", body=" + body +
+                '}';
     }
 }

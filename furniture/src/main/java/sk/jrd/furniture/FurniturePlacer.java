@@ -1,50 +1,44 @@
 package sk.jrd.furniture;
 
-import java.util.BitSet;
-
+import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sk.jrd.furniture.shape.Furniture;
+import sk.jrd.furniture.shape.Room;
+import sk.jrd.furniture.shape.RoomWithFurniture;
 
-public class FurniturePlacer {
+import java.util.ArrayList;
+import java.util.List;
+
+class FurniturePlacer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FurniturePlacer.class);
 
-    private static final String ROOM_DEFINITION = System.getProperty("roomDefinition");
-    private static final String FURNITURE_DEFINITIONS = System.getProperty("furnitureDefinitions");
-
     public static void main(String[] args) {
         LOGGER.info("Start of Furniture Placer");
-        LOGGER.info("Room definition: {}", ROOM_DEFINITION);
-        LOGGER.info("Furniture definitions: {}", FURNITURE_DEFINITIONS);
 
-        // BitSet example
-        BitSet bits1 = new BitSet(16);
-        BitSet bits2 = new BitSet(16);
+        Room room = Room.Factory.create(Properties.getRoomDefinition());
+        List<Furniture> furnitures = Furniture.Factory.createAll(Properties.getFurnitureDefinitions());
 
-        // set some bits
-        for (int i = 0; i < 16; i++) {
-            if ((i % 2) == 0) bits1.set(i);
-            if ((i % 5) != 0) bits2.set(i);
+        @SuppressWarnings("unused") List<Pair<Furniture, List<RoomWithFurniture>>> combinations = createCombinations(room, furnitures);
+    }
+
+    private static List<Pair<Furniture, List<RoomWithFurniture>>> createCombinations(Room room, List<Furniture> furnitures) {
+        LOGGER.info("Create combinations for room={} and furniture={}", room, furnitures);
+        final List<Pair<Furniture, List<RoomWithFurniture>>> combinations = new ArrayList<>();
+
+        for (Furniture furniture : furnitures) {
+            final Pair<Furniture, List<RoomWithFurniture>> pair = new Pair<>(furniture, new ArrayList<>());
+            combinations.add(pair);
+
+            for (int x = 0; x < room.getWidth() - furniture.getWidth(); x++) { // width
+                for (int y = 0; y < room.getHeight() - furniture.getHeight(); y++) { // height
+                    RoomWithFurniture.Factory.create(x, y, furniture, room)
+                            .ifPresent(roomWithFurniture -> pair.getValue().add(roomWithFurniture));
+                }
+            }
         }
 
-        System.out.println("Initial pattern in bits1: ");
-        System.out.println(bits1);
-        System.out.println("\nInitial pattern in bits2: ");
-        System.out.println(bits2);
-
-        // AND bits
-        bits2.and(bits1);
-        System.out.println("\nbits2 AND bits1: ");
-        System.out.println(bits2);
-
-        // OR bits
-        bits2.or(bits1);
-        System.out.println("\nbits2 OR bits1: ");
-        System.out.println(bits2);
-
-        // XOR bits
-        bits2.xor(bits1);
-        System.out.println("\nbits2 XOR bits1: ");
-        System.out.println(bits2);
+        return combinations;
     }
 }

@@ -1,35 +1,87 @@
 package sk.jrd.furniture.shape;
 
-import static com.google.common.base.Preconditions.*;
-
-import java.util.BitSet;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sk.jrd.furniture.shape.body.BodyBitSetBuilder;
+
+import javax.annotation.Nonnull;
+import java.util.BitSet;
+import java.util.List;
+import java.util.Optional;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Room extends AbstractShape {
 
-    public Room(int width, int height, @Nonnull BitSet body) {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Room.class);
+
+    Room(int width, int height, @Nonnull BitSet body) {
         super(width, height, body);
     }
 
-    public static class Builder {
+    @Override
+    public String toString() {
+        return "Room{} " + super.toString();
+    }
+
+    private int getFromBitIndex(int positionX, int positionY) {
+        return (positionY * getWidth()) // choose row
+                + positionX; // choose column
+    }
+
+    @Nonnull
+    Optional<BitSet> placeFurniture(int positionX, int positionY, @Nonnull Furniture furniture) {
+        LOGGER.debug("Place on position X={} Y={} furniture={}", positionX, positionY, furniture);
+
+        checkArgument(positionX < getWidth(), "Position X overflow room width");
+        checkArgument(positionY < getHeight(), "Position Y overflow room width");
+
+        // set for return with placed furniture
+        BitSet flipSet = (BitSet) getBody().clone();
+        // set for compare with origin
+        BitSet andSet = (BitSet) getBody().clone();
+
+        for (BitSet row : furniture.getRows()) { // through all furniture rows
+            for (int i = getFromBitIndex(positionX, positionY); i < andSet.size(); i = +getWidth()) { // through whole room
+                for (int j = 0; j < row.size(); j++) { // bitwise operation
+                    boolean furnitureBit = row.get(j);
+                    boolean roomBit = andSet.get(i + j);
+
+                    // and for compare
+                    if (furnitureBit && roomBit) {
+                        andSet.set(i + j);
+                    } else {
+                        andSet.clear(i + j);
+                    }
+
+                    flipSet.flip(i + j);
+                }
+            }
+        }
+
+        if (andSet.equals(getBody())) {
+            return Optional.of(flipSet);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    static class Builder {
         /**
          * All values separator given for room definition.
          */
-        public static final char DEFINITION_SEPARATOR = ' ';
+        static final char DEFINITION_SEPARATOR = ' ';
         /**
          * Height and width separator
          */
-        public static final char DIMENSION_SEPARATOR = ',';
+        static final char DIMENSION_SEPARATOR = ',';
 
-        private static Splitter definitionSplitter = Splitter.on(DEFINITION_SEPARATOR).trimResults().omitEmptyStrings();
-        private static Splitter dimensionsSplitter = Splitter.on(DIMENSION_SEPARATOR).trimResults().omitEmptyStrings();
+        private static final Splitter definitionSplitter = Splitter.on(DEFINITION_SEPARATOR).trimResults().omitEmptyStrings();
+        private static final Splitter dimensionsSplitter = Splitter.on(DIMENSION_SEPARATOR).trimResults().omitEmptyStrings();
 
         /**
          * Room definition.
@@ -40,7 +92,7 @@ public class Room extends AbstractShape {
          * @param definition with accept of following definition:<br/>
          *                   -DroomDefinition="5,6 ..###. .####. ###### ###### ...###"
          */
-        public Builder(@Nonnull String definition) {
+        Builder(@Nonnull String definition) {
             this.definition = checkNotNull(definition, "Definition of room is NULL");
         }
 
@@ -92,7 +144,8 @@ public class Room extends AbstractShape {
             return definitions;
         }
 
-        public Room build() {
+        @Nonnull
+        Room build() {
             List<String> definitions = getDefinitions();
             String dimensions = getDimensions(definitions);
             List<String> roomDefinition = getRoomDefinition(definitions);
@@ -104,6 +157,15 @@ public class Room extends AbstractShape {
             final BitSet body = getBody(roomDefinition, width, height);
 
             return new Room(width, height, body);
+        }
+    }
+
+    public static class Factory {
+
+        @Nonnull
+        public static Room create(@Nonnull String definition) {
+            LOGGER.info("Create of room from definition: {}", definition);
+            return new Room.Builder(definition).build();
         }
     }
 

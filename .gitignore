@@ -1,4 +1,4 @@
-# Ideam
+# Idea
 *.iml
 .idea/**
 !.idea/runConfigurations/

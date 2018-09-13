@@ -1,40 +1,75 @@
 package sk.jrd.furniture.shape;
 
-import static com.google.common.base.Preconditions.*;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sk.jrd.furniture.shape.body.BodyBitSetBuilder;
 
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nonnull;
-
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import sk.jrd.furniture.shape.body.BodyBitSetBuilder;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Furniture extends AbstractShape {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Room.class);
+
     private final char type;
 
-    public Furniture(char type, int width, int height, @Nonnull BitSet body) {
+    Furniture(char type, int width, int height, @Nonnull BitSet body) {
         super(width, height, body);
         this.type = type;
     }
 
-    public char getType() {
+    char getType() {
         return type;
+    }
+
+    List<BitSet> getRows() {
+        List<BitSet> result = new ArrayList<>();
+        for (int i = 0; i < getBody().size(); i = +getWidth()) {
+            result.add(getBody().get(i, i + getWidth() - 1));
+        }
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Furniture furniture = (Furniture) o;
+
+        return type == furniture.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) type;
+    }
+
+    @Override
+    public String toString() {
+        return "Furniture{" +
+                "type=" + type +
+                "} " + super.toString();
     }
 
     /**
      * Builder of all furniture definition from given argument.
      */
-    public static class Builder {
+    static class Builder {
         /**
          * Values separator for given furniture definitions.
          */
-        public static final char DEFINITION_SEPARATOR = ' ';
+        static final char DEFINITION_SEPARATOR = ' ';
 
-        private static Splitter allDefinitionsSplitter = Splitter.on(DEFINITION_SEPARATOR).trimResults().omitEmptyStrings();
+        private static final Splitter allDefinitionsSplitter = Splitter.on(DEFINITION_SEPARATOR).trimResults().omitEmptyStrings();
 
         /**
          * Furniture definitions
@@ -45,7 +80,7 @@ public class Furniture extends AbstractShape {
          * @param allDefinitions with accept of following definition:<br/>
          *                       -DfurnitureDefinitions="A2#### B3.#.###.#."
          */
-        public Builder(@Nonnull String allDefinitions) {
+        Builder(@Nonnull String allDefinitions) {
             this.allDefinitions = checkNotNull(allDefinitions, "All furniture definitions are NULL");
         }
 
@@ -94,10 +129,20 @@ public class Furniture extends AbstractShape {
         }
 
         @Nonnull
-        public List<Furniture> buildAll() {
+        List<Furniture> buildAll() {
             return getAllDefinitions().stream()
-                    .map(definition -> buildOne(definition))
+                    .map(this::buildOne)
                     .collect(Collectors.toList());
         }
     }
+
+    public static class Factory {
+
+        @Nonnull
+        public static List<Furniture> createAll(@Nonnull String allDefinitions) {
+            LOGGER.info("Create of furniture from all definitions: {}", allDefinitions);
+            return new Furniture.Builder(allDefinitions).buildAll();
+        }
+    }
+
 }
