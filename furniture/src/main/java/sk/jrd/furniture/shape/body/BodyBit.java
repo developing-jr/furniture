@@ -2,7 +2,7 @@ package sk.jrd.furniture.shape.body;
 
 import java.util.Optional;
 
-import com.sun.istack.internal.NotNull;
+import javax.annotation.Nonnull;
 
 public enum BodyBit {
     True('#'),
@@ -14,7 +14,7 @@ public enum BodyBit {
         this.value = value;
     }
 
-    @NotNull
+    @Nonnull
     public static Optional<BodyBit> of(char value) {
         for (BodyBit bodyBit : values()) {
             if (bodyBit.value == value) {
