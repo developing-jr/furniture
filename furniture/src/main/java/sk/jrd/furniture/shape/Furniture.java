@@ -1,19 +1,20 @@
 package sk.jrd.furniture.shape;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sk.jrd.furniture.shape.body.BodyBitSetBuilder;
+import static com.google.common.base.Preconditions.*;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nonnull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import sk.jrd.furniture.shape.body.BodyBitSetBuilder;
 
 public class Furniture extends AbstractShape {
 
@@ -32,8 +33,8 @@ public class Furniture extends AbstractShape {
 
     List<BitSet> getRows() {
         List<BitSet> result = new ArrayList<>();
-        for (int i = 0; i < getBody().size(); i = +getWidth()) {
-            result.add(getBody().get(i, i + getWidth() - 1));
+        for (int i = 0; i < getBody().length(); i = i + getWidth()) {
+            result.add(getBody().get(i, i + getWidth()));
         }
         return result;
     }
@@ -85,7 +86,9 @@ public class Furniture extends AbstractShape {
         }
 
         private char getType(@Nonnull String definition) {
-            return definition.charAt(0);
+            char result = definition.charAt(0);
+            checkArgument(Character.toString(result).matches("[A-Z]"), "Not valid type of furniture");
+            return result;
         }
 
         private int getWidth(@Nonnull String definition) {
@@ -93,7 +96,7 @@ public class Furniture extends AbstractShape {
         }
 
         private String getBodyString(@Nonnull String definition) {
-            return definition.substring(3);
+            return definition.substring(2);
         }
 
         private int getHeight(@Nonnull String definition, int width) {
@@ -109,7 +112,7 @@ public class Furniture extends AbstractShape {
 
         private Furniture buildOne(@Nonnull String definition) {
             checkNotNull(definition);
-            checkArgument(definition.length() > 3);
+            checkArgument(definition.length() > 2);
 
             // type
             final char type = getType(definition);

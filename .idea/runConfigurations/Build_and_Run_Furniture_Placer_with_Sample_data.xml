@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Build and Run Example Furniture Placer" type="MavenRunConfiguration" factoryName="Maven">
+  <configuration default="false" name="Build and Run Furniture Placer with Sample data" type="MavenRunConfiguration" factoryName="Maven">
     <MavenSettings>
       <option name="myGeneralSettings" />
       <option name="myRunnerSettings" />
@@ -18,6 +18,7 @@
               <option value="-DfurnitureDefinitions=A2#### B3.#.###.#." />
             </list>
           </option>
+          <option name="pomFileName" />
           <option name="profilesMap">
             <map />
           </option>
@@ -26,6 +27,6 @@
         </MavenRunnerParameters>
       </option>
     </MavenSettings>
-    <method />
+    <method v="2" />
   </configuration>
 </component>

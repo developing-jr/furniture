@@ -1,19 +1,20 @@
 package sk.jrd.furniture.shape;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sk.jrd.furniture.shape.body.BodyBitSetBuilder;
+import static com.google.common.base.Preconditions.*;
 
-import javax.annotation.Nonnull;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nonnull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import sk.jrd.furniture.shape.body.BodyBitSetBuilder;
 
 public class Room extends AbstractShape {
 
@@ -37,33 +38,39 @@ public class Room extends AbstractShape {
     Optional<BitSet> placeFurniture(int positionX, int positionY, @Nonnull Furniture furniture) {
         LOGGER.debug("Place on position X={} Y={} furniture={}", positionX, positionY, furniture);
 
-        checkArgument(positionX < getWidth(), "Position X overflow room width");
-        checkArgument(positionY < getHeight(), "Position Y overflow room width");
+        checkArgument(positionX < getWidth(), "Position X overflows room width");
+        checkArgument(positionY < getHeight(), "Position Y overflows room width");
 
         // set for return with placed furniture
         BitSet flipSet = (BitSet) getBody().clone();
-        // set for compare with origin
-        BitSet andSet = (BitSet) getBody().clone();
 
-        for (BitSet row : furniture.getRows()) { // through all furniture rows
-            for (int i = getFromBitIndex(positionX, positionY); i < andSet.size(); i = +getWidth()) { // through whole room
-                for (int j = 0; j < row.size(); j++) { // bitwise operation
-                    boolean furnitureBit = row.get(j);
-                    boolean roomBit = andSet.get(i + j);
+        List<BitSet> furnitureRows = furniture.getRows();
+        int rowIdx = 0;
+        boolean breakAll = false;
+        for (int i = getFromBitIndex(positionX, positionY);
+             i < flipSet.length() && rowIdx < furnitureRows.size();
+             i = i + getWidth()) { // through whole room
+            BitSet furnitureRow = furnitureRows.get(rowIdx++);
 
-                    // and for compare
-                    if (furnitureBit && roomBit) {
-                        andSet.set(i + j);
-                    } else {
-                        andSet.clear(i + j);
-                    }
+            for (int j = 0; j < furniture.getWidth(); j++) { // bitwise operation
+                boolean furnitureBit = furnitureRow.get(j);
+                boolean roomBit = flipSet.get(i + j);
 
-                    flipSet.flip(i + j);
+                // and + flip
+                if (furnitureBit && roomBit) {
+                    flipSet.flip(i + j); // occupied bit
+                } else if ((!furnitureBit && !roomBit) || (!furnitureBit && roomBit)) {
+                    continue; // free bit
+                } else {
+                    breakAll = true;
+                    break;
                 }
             }
+
+            if (breakAll) break;
         }
 
-        if (andSet.equals(getBody())) {
+        if (!breakAll) {
             return Optional.of(flipSet);
         } else {
             return Optional.empty();
@@ -129,7 +136,7 @@ public class Room extends AbstractShape {
 
         private List<String> getRoomDefinition(@Nonnull List<String> definitions) {
             checkArgument(definitions.size() > 1, "Not valid room definition");
-            return definitions.subList(1, definitions.size() - 1);
+            return definitions.subList(1, definitions.size());
         }
 
 
@@ -140,20 +147,21 @@ public class Room extends AbstractShape {
 
         private List<String> getDefinitions() {
             List<String> definitions = Lists.newArrayList(definitionSplitter.split(definition));
-            checkArgument(definitions.isEmpty(), "Room definitions are empty");
+            checkArgument(!definitions.isEmpty(), "Room definitions are empty");
             return definitions;
         }
 
         @Nonnull
         Room build() {
             List<String> definitions = getDefinitions();
-            String dimensions = getDimensions(definitions);
-            List<String> roomDefinition = getRoomDefinition(definitions);
 
             // dimensions
+            String dimensions = getDimensions(definitions);
             final int width = getWidth(dimensions);
             final int height = getHeight(dimensions);
+
             // body string
+            List<String> roomDefinition = getRoomDefinition(definitions);
             final BitSet body = getBody(roomDefinition, width, height);
 
             return new Room(width, height, body);
