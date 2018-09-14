@@ -36,7 +36,7 @@ public class Room extends AbstractShape {
 
     @Nonnull
     Optional<BitSet> placeFurniture(int positionX, int positionY, @Nonnull Furniture furniture) {
-        LOGGER.debug("Place on position X={} Y={} furniture={}", positionX, positionY, furniture);
+        LOGGER.debug("Place on position X={} Y={} the furniture={} for body={}", positionX, positionY, furniture, getBody());
 
         checkArgument(positionX < getWidth(), "Position X overflows room width");
         checkArgument(positionY < getHeight(), "Position Y overflows room width");

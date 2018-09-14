@@ -1,19 +1,22 @@
 package sk.jrd.furniture.shape;
 
-import javax.annotation.Nonnull;
 import java.util.BitSet;
 import java.util.Optional;
 
-public class RoomWithFurniture extends Furniture {
+import javax.annotation.Nonnull;
 
+public class RoomWithFurniture extends Room {
+
+    private final char furnitureType;
     private final int positionX;
     private final int positionY;
 
-    private RoomWithFurniture(int positionX, int positionY, char type, int width, int height, @Nonnull BitSet body) {
-        super(type, width, height, body);
+    private RoomWithFurniture(int positionX, int positionY, char furnitureType, int width, int height, @Nonnull BitSet body) {
+        super(width, height, body);
 
         this.positionX = positionX;
         this.positionY = positionY;
+        this.furnitureType = furnitureType;
     }
 
     @SuppressWarnings("unused")
@@ -26,10 +29,16 @@ public class RoomWithFurniture extends Furniture {
         return positionY;
     }
 
+    @SuppressWarnings("unused")
+    public char getFurnitureType() {
+        return furnitureType;
+    }
+
     @Override
     public String toString() {
         return "RoomWithFurniture{" +
-                "positionX=" + positionX +
+                "furnitureType=" + furnitureType +
+                ", positionX=" + positionX +
                 ", positionY=" + positionY +
                 "} " + super.toString();
     }
