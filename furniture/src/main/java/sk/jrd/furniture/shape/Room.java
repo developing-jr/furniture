@@ -34,6 +34,12 @@ public class Room extends AbstractShape {
                 + positionX; // choose column
     }
 
+    /**
+     * @param positionX X position, where furniture is placed
+     * @param positionY Y position, where furniture is placed
+     * @param furniture to place
+     * @return new room definition with placed given furniture, otherwise returns empty definition.
+     */
     @Nonnull
     Optional<BitSet> placeFurniture(int positionX, int positionY, @Nonnull Furniture furniture) {
         LOGGER.debug("Place on position X={} Y={} the furniture={} for body={}", positionX, positionY, furniture, getBody());
@@ -41,7 +47,7 @@ public class Room extends AbstractShape {
         checkArgument(positionX < getWidth(), "Position X overflows room width");
         checkArgument(positionY < getHeight(), "Position Y overflows room width");
 
-        // set for return with placed furniture
+        // bitSet to return with placed furniture
         BitSet flipSet = (BitSet) getBody().clone();
 
         List<BitSet> furnitureRows = furniture.getRows();
@@ -50,19 +56,20 @@ public class Room extends AbstractShape {
         for (int i = getFromBitIndex(positionX, positionY);
              i < flipSet.length() && rowIdx < furnitureRows.size();
              i = i + getWidth()) { // through whole room
+            // furniture row to place
             BitSet furnitureRow = furnitureRows.get(rowIdx++);
 
             for (int j = 0; j < furniture.getWidth(); j++) { // bitwise operation
                 boolean furnitureBit = furnitureRow.get(j);
                 boolean roomBit = flipSet.get(i + j);
 
-                // and + flip
+                //
                 if (furnitureBit && roomBit) {
-                    flipSet.flip(i + j); // occupied bit
+                    flipSet.flip(i + j); // mark occupied room bit
                 } else if ((!furnitureBit && !roomBit) || (!furnitureBit && roomBit)) {
-                    continue; // free bit
+                    continue; // skip free bit
                 } else {
-                    breakAll = true;
+                    breakAll = true; // break placement with not successful placement
                     break;
                 }
             }
@@ -97,7 +104,7 @@ public class Room extends AbstractShape {
 
         /**
          * @param definition with accept of following definition:<br/>
-         *                   -DroomDefinition="5,6 ..###. .####. ###### ###### ...###"
+         *                   "5,6 ..###. .####. ###### ###### ...###"
          */
         Builder(@Nonnull String definition) {
             this.definition = checkNotNull(definition, "Definition of room is NULL");
@@ -105,7 +112,7 @@ public class Room extends AbstractShape {
 
         /**
          * @param dimensions is e.g. "5,6"
-         * @return with from dimension, it's second argument after the comma
+         * @return with from dimension, it's second argument after the comma letter
          */
         private int getWidth(@Nonnull String dimensions) {
             List<String> dimensionList = Lists.newArrayList(dimensionsSplitter.split(dimensions));
@@ -115,7 +122,7 @@ public class Room extends AbstractShape {
 
         /**
          * @param dimensions is e.g. "5,6"
-         * @return height from dimension, it's first argument after the comma
+         * @return height from dimension, it's first argument after the comma letter
          */
         private int getHeight(@Nonnull String dimensions) {
             List<String> dimensionList = Lists.newArrayList(dimensionsSplitter.split(dimensions));

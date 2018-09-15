@@ -18,7 +18,6 @@
               <option value="-DfurnitureDefinitions=A2#### B3.#.###.#." />
             </list>
           </option>
-          <option name="pomFileName" />
           <option name="profilesMap">
             <map />
           </option>
@@ -27,6 +26,6 @@
         </MavenRunnerParameters>
       </option>
     </MavenSettings>
-    <method v="2" />
+    <method />
   </configuration>
 </component>

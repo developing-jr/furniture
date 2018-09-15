@@ -9,11 +9,11 @@
     </appender>
 
     <logger name="sk.jrd" level="DEBUG" additivity="false">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT"/>
     </logger>
 
     <!-- By default, the level of the root level is set to DEBUG -->
     <root level="WARN">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

@@ -1,20 +1,19 @@
 package sk.jrd.furniture.shape;
 
-import static com.google.common.base.Preconditions.*;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sk.jrd.furniture.shape.body.BodyBitSetBuilder;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nonnull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import sk.jrd.furniture.shape.body.BodyBitSetBuilder;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Furniture extends AbstractShape {
 
@@ -27,7 +26,7 @@ public class Furniture extends AbstractShape {
         this.type = type;
     }
 
-    char getType() {
+    public char getType() {
         return type;
     }
 
