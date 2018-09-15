@@ -15,6 +15,9 @@ import java.util.stream.Collectors;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Represents furniture in room.
+ */
 public class Furniture extends AbstractShape {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Room.class);
@@ -26,10 +29,16 @@ public class Furniture extends AbstractShape {
         this.type = type;
     }
 
+    /**
+     * @return type of furniture in one letter format from first position of definition, e.g. definition - B3.#.###.#.
+     */
     public char getType() {
         return type;
     }
 
+    /**
+     * @return rows of furniture in bitwise body
+     */
     List<BitSet> getRows() {
         List<BitSet> result = new ArrayList<>();
         for (int i = 0; i < getBody().length(); i = i + getWidth()) {
@@ -61,7 +70,7 @@ public class Furniture extends AbstractShape {
     }
 
     /**
-     * Builder of all furniture definition from given argument.
+     * Builder of all furniture from given definitions.
      */
     static class Builder {
         /**
@@ -72,13 +81,14 @@ public class Furniture extends AbstractShape {
         private static final Splitter allDefinitionsSplitter = Splitter.on(DEFINITION_SEPARATOR).trimResults().omitEmptyStrings();
 
         /**
-         * Furniture definitions
+         * All furniture definitions
          */
         private final String allDefinitions;
 
         /**
          * @param allDefinitions with accept of following definition:<br/>
-         *                       -DfurnitureDefinitions="A2#### B3.#.###.#."
+         *                       "A2#### B3.#.###.#."
+         * @throws NullPointerException when allDefinitions is NUll
          */
         Builder(@Nonnull String allDefinitions) {
             this.allDefinitions = checkNotNull(allDefinitions, "All furniture definitions are NULL");
@@ -109,6 +119,12 @@ public class Furniture extends AbstractShape {
             return new BodyBitSetBuilder(getBodyString(definition)).build();
         }
 
+        /**
+         * @param definition definition of one furniture
+         * @return furniture from given definition
+         * @throws NullPointerException     if definition is NULL
+         * @throws IllegalArgumentException if definition has not valid expression
+         */
         private Furniture buildOne(@Nonnull String definition) {
             checkNotNull(definition);
             checkArgument(definition.length() > 2);
@@ -130,6 +146,11 @@ public class Furniture extends AbstractShape {
             return result;
         }
 
+        /**
+         * @return all furniture from given string definition
+         * @throws NullPointerException     if definition is NULL
+         * @throws IllegalArgumentException if definition has not valid expression
+         */
         @Nonnull
         List<Furniture> buildAll() {
             return getAllDefinitions().stream()
@@ -140,6 +161,10 @@ public class Furniture extends AbstractShape {
 
     public static class Factory {
 
+        /**
+         * @param allDefinitions definitions of furniture
+         * @return furniture represented in given definition
+         */
         @Nonnull
         public static List<Furniture> createAll(@Nonnull String allDefinitions) {
             LOGGER.info("Create of furniture from all definitions: {}", allDefinitions);

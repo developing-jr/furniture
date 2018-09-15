@@ -1,21 +1,23 @@
 package sk.jrd.furniture.shape;
 
-import static com.google.common.base.Preconditions.*;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sk.jrd.furniture.shape.body.BodyBitSetBuilder;
 
+import javax.annotation.Nonnull;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.Nonnull;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import sk.jrd.furniture.shape.body.BodyBitSetBuilder;
-
+/**
+ * Represents room to place furniture in.
+ */
 public class Room extends AbstractShape {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Room.class);
@@ -37,12 +39,12 @@ public class Room extends AbstractShape {
     /**
      * @param positionX X position, where furniture is placed
      * @param positionY Y position, where furniture is placed
-     * @param furniture to place
-     * @return new room definition with placed given furniture, otherwise returns empty definition.
+     * @param furniture to place in room
+     * @return new room definition with placed given furniture in bitwise body, otherwise returns empty definition.
      */
     @Nonnull
     Optional<BitSet> placeFurniture(int positionX, int positionY, @Nonnull Furniture furniture) {
-        LOGGER.debug("Place on position X={} Y={} the furniture={} for body={}", positionX, positionY, furniture, getBody());
+        LOGGER.trace("Place on position X={} Y={} the furniture={} for body={}", positionX, positionY, furniture, getBody());
 
         checkArgument(positionX < getWidth(), "Position X overflows room width");
         checkArgument(positionY < getHeight(), "Position Y overflows room width");
@@ -84,13 +86,16 @@ public class Room extends AbstractShape {
         }
     }
 
+    /**
+     * Builder of all furniture from given definitions.
+     */
     static class Builder {
         /**
-         * All values separator given for room definition.
+         * All values separator for given room definition.
          */
         static final char DEFINITION_SEPARATOR = ' ';
         /**
-         * Height and width separator
+         * Height and width property separator.
          */
         static final char DIMENSION_SEPARATOR = ',';
 
@@ -105,6 +110,7 @@ public class Room extends AbstractShape {
         /**
          * @param definition with accept of following definition:<br/>
          *                   "5,6 ..###. .####. ###### ###### ...###"
+         * @throws NullPointerException when definition is NULL
          */
         Builder(@Nonnull String definition) {
             this.definition = checkNotNull(definition, "Definition of room is NULL");
@@ -112,7 +118,7 @@ public class Room extends AbstractShape {
 
         /**
          * @param dimensions is e.g. "5,6"
-         * @return with from dimension, it's second argument after the comma letter
+         * @return width from dimension, it's second argument after the comma letter
          */
         private int getWidth(@Nonnull String dimensions) {
             List<String> dimensionList = Lists.newArrayList(dimensionsSplitter.split(dimensions));
@@ -158,6 +164,11 @@ public class Room extends AbstractShape {
             return definitions;
         }
 
+        /**
+         * @return room from given string definition
+         * @throws NullPointerException     if definition is NULL
+         * @throws IllegalArgumentException if definition has not valid expression
+         */
         @Nonnull
         Room build() {
             List<String> definitions = getDefinitions();
@@ -177,6 +188,10 @@ public class Room extends AbstractShape {
 
     public static class Factory {
 
+        /**
+         * @param definition definition of room
+         * @return room represented in given definition
+         */
         @Nonnull
         public static Room create(@Nonnull String definition) {
             LOGGER.info("Create of room from definition: {}", definition);

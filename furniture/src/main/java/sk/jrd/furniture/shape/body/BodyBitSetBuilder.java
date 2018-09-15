@@ -1,11 +1,15 @@
 package sk.jrd.furniture.shape.body;
 
-import static com.google.common.base.Preconditions.*;
-
+import javax.annotation.Nonnull;
 import java.util.BitSet;
 
-import javax.annotation.Nonnull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Bitwise body builder of shape.
+ *
+ * @see BodyBit
+ */
 public class BodyBitSetBuilder {
 
     private final String body;

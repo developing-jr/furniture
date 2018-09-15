@@ -1,9 +1,11 @@
 package sk.jrd.furniture.shape.body;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 
-import javax.annotation.Nonnull;
-
+/**
+ * Bit of shape, which represents either occupied or free place within.
+ */
 public enum BodyBit {
     True('#'),
     False('.');

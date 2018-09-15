@@ -6,6 +6,9 @@ import java.util.BitSet;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Abstract base implementation of shape.
+ */
 abstract class AbstractShape implements Shape {
 
     private final int width;
