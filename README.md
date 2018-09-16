@@ -22,5 +22,5 @@ The application can be started:
 ````bash
 java -DroomDefinition="5,6 ..###. .####. ###### ###### ...###" -DfurnitureDefinitions="A2#### B3.#.###.#." -jar furniture-1.0-SNAPSHOT-shaded.jar
 ````
-* or if you familiar with IDE IntelliJ Idea, then by import of the maven project is imported the launcher with name \"*Build and Run Furniture Placer with Sample data*\", which by start rebuild the application and afterwards start the application also with following sample system properties 
+* or if you familiar with IDE IntelliJ Idea, then by import of the maven project is imported the launcher with name \"*Build and Run Furniture Placer with Sample data*\", which by start rebuilds the application and afterwards starts the application also with following sample system properties 
 `-DroomDefinition="5,6 ..###. .####. ###### ###### ...###" -DfurnitureDefinitions="A2#### B3.#.###.#."`.
