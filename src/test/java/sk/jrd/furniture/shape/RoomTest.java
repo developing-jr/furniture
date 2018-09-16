@@ -1,11 +1,11 @@
 package sk.jrd.furniture.shape;
 
-import static com.google.common.truth.Truth.assertThat;
+import org.junit.Test;
 
 import java.util.BitSet;
 import java.util.Optional;
 
-import org.junit.Test;
+import static com.google.common.truth.Truth.assertThat;
 
 public class RoomTest {
 
@@ -30,7 +30,7 @@ public class RoomTest {
     }
 
     @Test
-    public void invalidPlacementOfFurniture() {
+    public void placeOfFurniture() {
         Furniture furniture = new Furniture.Builder("B3.#.###.#.").buildAll().iterator().next();
         // furniture
         ///.#.

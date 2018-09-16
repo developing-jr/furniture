@@ -16,9 +16,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class RoomFurniturePrinter {
 
+    /**
+     * All combination trees
+     */
     private final List<RoomWithFurnitureNode> combinationTrees;
-
+    /**
+     * The last nodes in combination trees.
+     */
     private final List<RoomWithFurnitureNode> lastCombinationNodesOfTrees;
+    /**
+     * All combination in list form.
+     */
     private final Combinations combinations;
 
     /**
@@ -44,12 +52,12 @@ public class RoomFurniturePrinter {
      */
     public void print() {
         collectLastNodesInTrees();
-        collectAndCombinationIntoOneRow();
+        convertCombinationNodeTreesIntoList();
         printCombinations();
     }
 
     /**
-     * Collects all last node in tree to convert combination tree into list of combinations.
+     * Collects all last nodes in trees to convert combination tree into list of combinations.
      */
     private void collectLastNodesInTrees() {
         combinationTrees.forEach(node -> collectLastNode(node));
@@ -66,10 +74,9 @@ public class RoomFurniturePrinter {
     }
 
     /**
-     * Converts from node tree combinations into list of combinations.
+     * Converts from combination node trees into list of combinations.
      */
-    // collect all combination into one row
-    private void collectAndCombinationIntoOneRow() {
+    private void convertCombinationNodeTreesIntoList() {
         lastCombinationNodesOfTrees.forEach(node -> collectCombinationsFromLastNode(node,
                 combinations.addAndGet(new Combination())));
     }
@@ -82,10 +89,9 @@ public class RoomFurniturePrinter {
     }
 
     /**
-     * Prints combinations.
+     * Prints all combinations.
      */
     private void printCombinations() {
-        // print all combinations
         combinations
                 .sort().removeDuplicities() // sort before remove of duplicities, cause of hashCode usage by HashSet
                 .sort().print(); // sort before print, after remove of duplicities by HashSet

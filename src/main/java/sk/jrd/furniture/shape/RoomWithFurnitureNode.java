@@ -16,7 +16,7 @@ public class RoomWithFurnitureNode extends RoomWithFurniture {
     private RoomWithFurnitureNode parent;
     private final List<RoomWithFurnitureNode> children;
 
-    private RoomWithFurnitureNode(int positionX, int positionY, @Nonnull Furniture furniture, int width, int height, @Nonnull BitSet body) {
+    RoomWithFurnitureNode(int positionX, int positionY, @Nonnull Furniture furniture, int width, int height, @Nonnull BitSet body) {
         super(positionX, positionY, furniture, width, height, body);
 
         parent = null;
