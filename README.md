@@ -6,7 +6,7 @@ The application is created in Java using Maven project management software. The 
 
 To build the maven project *room-furniture* you can use
 * command `mvn clean build` in root directory
-* or if you familiar with IDE IntelliJ Idea, then by import of the maven project is imported build the launcher with name *Build*.
+* or if you familiar with IDE IntelliJ Idea, then by import of the maven project is imported the build launcher with name *Build*.
 
 After successfully build is created in *Target* directory of maven project the shaded JAR file *room-furniture-1.0-SNAPSHOT-shaded.jar*, which contains all needed dependencies to run the application.
 
@@ -18,7 +18,7 @@ To run application you need to define 2 system properties:
 
 ### Start run
 The application can be started:
-* from terminal using following command line, which contains sample system properties
+* from terminal use following command line, which contains sample system properties
 ````bash
 java -DroomDefinition="5,6 ..###. .####. ###### ###### ...###" -DfurnitureDefinitions="A2#### B3.#.###.#." -jar furniture-1.0-SNAPSHOT-shaded.jar
 ````
